@@ -1,0 +1,134 @@
+[
+    {
+        "label": "lldb",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "lldb",
+        "description": "lldb",
+        "detail": "lldb",
+        "documentation": {}
+    },
+    {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "Flask",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "SocketIO",
+        "importPath": "flask_socketio",
+        "description": "flask_socketio",
+        "isExtraImport": true,
+        "detail": "flask_socketio",
+        "documentation": {}
+    },
+    {
+        "label": "emit",
+        "importPath": "flask_socketio",
+        "description": "flask_socketio",
+        "isExtraImport": true,
+        "detail": "flask_socketio",
+        "documentation": {}
+    },
+    {
+        "label": "handle_new_rx_page",
+        "kind": 2,
+        "importPath": "ios.Flutter.ephemeral.flutter_lldb_helper",
+        "description": "ios.Flutter.ephemeral.flutter_lldb_helper",
+        "peekOfCode": "def handle_new_rx_page(frame: lldb.SBFrame, bp_loc, extra_args, intern_dict):\n    \"\"\"Intercept NOTIFY_DEBUGGER_ABOUT_RX_PAGES and touch the pages.\"\"\"\n    base = frame.register[\"x0\"].GetValueAsAddress()\n    page_len = frame.register[\"x1\"].GetValueAsUnsigned()\n    # Note: NOTIFY_DEBUGGER_ABOUT_RX_PAGES will check contents of the\n    # first page to see if handled it correctly. This makes diagnosing\n    # misconfiguration (e.g. missing breakpoint) easier.\n    data = bytearray(page_len)\n    data[0:8] = b'IHELPED!'\n    error = lldb.SBError()",
+        "detail": "ios.Flutter.ephemeral.flutter_lldb_helper",
+        "documentation": {}
+    },
+    {
+        "label": "load_data",
+        "kind": 2,
+        "importPath": "lib.main",
+        "description": "lib.main",
+        "peekOfCode": "def load_data():\n    if os.path.exists(DATA_FILE):\n        try:\n            with open(DATA_FILE, \"r\") as f:\n                return json.load(f)\n        except:\n            pass\n    return {\"ashbal\": 0, \"kashaf\": 0, \"mutaqadim\": 0, \"jawala\": 0}\ndef save_data(data):\n    with open(DATA_FILE, \"w\") as f:",
+        "detail": "lib.main",
+        "documentation": {}
+    },
+    {
+        "label": "save_data",
+        "kind": 2,
+        "importPath": "lib.main",
+        "description": "lib.main",
+        "peekOfCode": "def save_data(data):\n    with open(DATA_FILE, \"w\") as f:\n        json.dump(data, f, indent=4)\nvotes = load_data()\n@socketio.on('connect')\ndef handle_connect():\n    print(f\"جهاز متصل. القيم الحالية: {votes}\")\n    emit('update_votes', votes)\n@socketio.on('cast_vote')\ndef handle_vote(*args):",
+        "detail": "lib.main",
+        "documentation": {}
+    },
+    {
+        "label": "handle_connect",
+        "kind": 2,
+        "importPath": "lib.main",
+        "description": "lib.main",
+        "peekOfCode": "def handle_connect():\n    print(f\"جهاز متصل. القيم الحالية: {votes}\")\n    emit('update_votes', votes)\n@socketio.on('cast_vote')\ndef handle_vote(*args):\n    global votes\n    if not args:\n        return\n    # استلام البيانات (سواء كانت Tuple أو List)\n    received_data = args",
+        "detail": "lib.main",
+        "documentation": {}
+    },
+    {
+        "label": "handle_vote",
+        "kind": 2,
+        "importPath": "lib.main",
+        "description": "lib.main",
+        "peekOfCode": "def handle_vote(*args):\n    global votes\n    if not args:\n        return\n    # استلام البيانات (سواء كانت Tuple أو List)\n    received_data = args\n    # print(f\"وصل تصويت جديد للخيارات التالية: {received_data}\")\n    # التحقق مما إذا كانت البيانات عبارة عن مجموعة (List أو Tuple)\n    if isinstance(received_data, (list, tuple)):\n        # تحديث كل خيار داخل المجموعة",
+        "detail": "lib.main",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "lib.main",
+        "description": "lib.main",
+        "peekOfCode": "app = Flask(__name__)\nsocketio = SocketIO(app, cors_allowed_origins=\"*\")\nDATA_FILE = \"votes_data.json\"\ndef load_data():\n    if os.path.exists(DATA_FILE):\n        try:\n            with open(DATA_FILE, \"r\") as f:\n                return json.load(f)\n        except:\n            pass",
+        "detail": "lib.main",
+        "documentation": {}
+    },
+    {
+        "label": "socketio",
+        "kind": 5,
+        "importPath": "lib.main",
+        "description": "lib.main",
+        "peekOfCode": "socketio = SocketIO(app, cors_allowed_origins=\"*\")\nDATA_FILE = \"votes_data.json\"\ndef load_data():\n    if os.path.exists(DATA_FILE):\n        try:\n            with open(DATA_FILE, \"r\") as f:\n                return json.load(f)\n        except:\n            pass\n    return {\"ashbal\": 0, \"kashaf\": 0, \"mutaqadim\": 0, \"jawala\": 0}",
+        "detail": "lib.main",
+        "documentation": {}
+    },
+    {
+        "label": "DATA_FILE",
+        "kind": 5,
+        "importPath": "lib.main",
+        "description": "lib.main",
+        "peekOfCode": "DATA_FILE = \"votes_data.json\"\ndef load_data():\n    if os.path.exists(DATA_FILE):\n        try:\n            with open(DATA_FILE, \"r\") as f:\n                return json.load(f)\n        except:\n            pass\n    return {\"ashbal\": 0, \"kashaf\": 0, \"mutaqadim\": 0, \"jawala\": 0}\ndef save_data(data):",
+        "detail": "lib.main",
+        "documentation": {}
+    },
+    {
+        "label": "votes",
+        "kind": 5,
+        "importPath": "lib.main",
+        "description": "lib.main",
+        "peekOfCode": "votes = load_data()\n@socketio.on('connect')\ndef handle_connect():\n    print(f\"جهاز متصل. القيم الحالية: {votes}\")\n    emit('update_votes', votes)\n@socketio.on('cast_vote')\ndef handle_vote(*args):\n    global votes\n    if not args:\n        return",
+        "detail": "lib.main",
+        "documentation": {}
+    }
+]

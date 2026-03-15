@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "240585260102",
+    "project_id": "scout-best-group",
+    "storage_bucket": "scout-best-group.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:240585260102:android:cfb1e914e659db0115de47",
+        "android_client_info": {
+          "package_name": "com.example.scout_vote"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYFuyKvo-0-ZjIzbGb9xvqen-AOEMF-XI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
