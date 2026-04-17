@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:scout_vote/server_setup_phone.dart';
+import 'package:scout_vote/setup_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,11 +20,11 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.deepPurple,
         useMaterial3: true,
         textTheme: GoogleFonts.notoKufiArabicTextTheme(
-          ThemeData.light().textTheme,
+          ThemeData.dark().textTheme,
           
         )
       ),
-      home: const ServerConfigScreen(),
+      home: const SetupScreen(),
     );
   }
 }

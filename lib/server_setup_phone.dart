@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scout_vote/vote_screen.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ServerConfigScreen extends StatefulWidget {
   const ServerConfigScreen({super.key});
@@ -9,15 +10,40 @@ class ServerConfigScreen extends StatefulWidget {
 }
 
 class _ServerConfigScreenState extends State<ServerConfigScreen> {
-  final TextEditingController _controller = TextEditingController(text: "192.168.1.70");
+  final TextEditingController _controller = TextEditingController(text: "192.168.1.70:5000");
+  bool _isConnecting = false;
 
-  void _startVoting() {
-    String url = "http://${_controller.text.trim()}:5000";
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => VotingScreen(serverUrl: url)),
-    );
+  void _tryConnect() {
+    setState(() => _isConnecting = true);
+
+    String url = _controller.text.trim();
+    if (!url.startsWith('http')) url = 'http://$url';
+
+    // محاولة اتصال مؤقتة للتحقق
+    IO.Socket socket = IO.io(url, IO.OptionBuilder()
+        .setTransports(['websocket'])
+        .setAckTimeout(5000) // 5 ثواني مهلة
+        .build());
+
+    socket.onConnect((_) {
+      socket.dispose(); // نغلقه هنا لنفتحه في الشاشة التالية
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => VotingScreen(serverUrl: url)),
+        );
+      }
+    });
+
+    socket.onConnectError((err) {
+      setState(() => _isConnecting = false);
+      socket.dispose();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("فشل الاتصال: $err"), backgroundColor: Colors.red),
+      );
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -37,11 +63,12 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
                 hintText: "مثال: 192.168.1.70",
                 border: OutlineInputBorder(),
               ),
-              keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _startVoting,
+            _isConnecting 
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
+              onPressed: _tryConnect,
               style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
               child: const Text("بدأ عملية التصويت"),
             ),

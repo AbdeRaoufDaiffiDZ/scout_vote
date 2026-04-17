@@ -11,6 +11,7 @@ class VotingScreen extends StatefulWidget {
 
 class _VotingScreenState extends State<VotingScreen> {
   late IO.Socket socket;
+  bool gender = false;
   final List<String> _selectedCategories = [];
 
   @override
@@ -20,11 +21,14 @@ class _VotingScreenState extends State<VotingScreen> {
   }
 
   void initSocket() {
-    socket = IO.io(widget.serverUrl, IO.OptionBuilder()
-      .setTransports(['websocket'])
-      .enableAutoConnect()
-      .build());
-    
+    socket = IO.io(
+      widget.serverUrl,
+      IO.OptionBuilder()
+          .setTransports(['websocket'])
+          .enableAutoConnect()
+          .build(),
+    );
+
     socket.connect();
     socket.onConnect((_) => print('متصل بالسيرفر ✅'));
   }
@@ -33,7 +37,7 @@ class _VotingScreenState extends State<VotingScreen> {
     setState(() {
       if (_selectedCategories.contains(category)) {
         _selectedCategories.remove(category);
-      } else if (_selectedCategories.length < 2) {
+      } else if (_selectedCategories.length < 4) {
         _selectedCategories.add(category);
       }
     });
@@ -54,7 +58,10 @@ class _VotingScreenState extends State<VotingScreen> {
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: const Text("شكراً لك", textAlign: TextAlign.center),
-        content: const Text("تم تسجيل تصويتك بنجاح", textAlign: TextAlign.center),
+        content: const Text(
+          "تم تسجيل تصويتك بنجاح",
+          textAlign: TextAlign.center,
+        ),
         actions: [
           TextButton(
             onPressed: () {
@@ -62,7 +69,7 @@ class _VotingScreenState extends State<VotingScreen> {
               Navigator.pop(context);
             },
             child: const Center(child: Text("إغلاق")),
-          )
+          ),
         ],
       ),
     );
@@ -76,42 +83,90 @@ class _VotingScreenState extends State<VotingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("صوّت لفرقتك"), centerTitle: true),
-      body: Column(
-        children: [
-          const SizedBox(height: 10),
-          Text(
-            "تم اختيار: ${_selectedCategories.length} / 2",
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          Expanded(
-            child: GridView.count(
-              crossAxisCount: 2,
-              padding: const EdgeInsets.all(16),
-              children: [
-                _voteButton("أشبال", "ashbal", Colors.orange),
-                _voteButton("كشاف", "kashaf", Colors.green),
-                _voteButton("متقدم", "mutaqadim", Colors.red),
-                _voteButton("جوالة", "jawala", Colors.blue),
-              ],
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          actions: [
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  gender = !gender;
+                });
+              },
+              icon: Icon(Icons.change_circle_outlined),
             ),
-          ),
-          // زر التأكيد (Submit Button)
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: ElevatedButton(
-              onPressed: _selectedCategories.length == 2 ? _submitVotes : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 60),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          ],
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 10),
+          
+              SizedBox(
+                width: 400,
+                height: 400,
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    _voteButton(
+                      gender ? "زهرات" : "أشبال",
+                      "ashbal",
+                      Colors.orange,
+                    ),
+                    _voteButton(
+                      gender ? "مرشدات" : "كشاف",
+                      "kashaf",
+                      Colors.green,
+                    ),
+                    _voteButton(
+                      gender ? "متقدمات" : "متقدم",
+                      "mutaqadim",
+                      const Color.fromARGB(255, 92, 21, 16),
+                    ),
+                    _voteButton(
+                      gender ? "جوالات" : "جوالة",
+                      "jawala",
+                      Colors.red,
+                    ),
+                  ],
+                ),
               ),
-              child: const Text("تأكيد وإرسال التصويت", style: TextStyle(fontSize: 20)),
-            ),
+              // زر التأكيد (Submit Button)
+              SizedBox(
+                width: 300,
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: ElevatedButton(
+                    onPressed: _selectedCategories.length >= 2
+                        ? _submitVotes
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      disabledBackgroundColor: const Color.fromARGB(
+                        76,
+                        0,
+                        140,
+                        255,
+                      ),
+                      minimumSize: const Size(double.infinity, 60),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    child: const Text(
+                      "تأكيد وإرسال التصويت",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 30,)
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -124,16 +179,25 @@ class _VotingScreenState extends State<VotingScreen> {
         duration: const Duration(milliseconds: 200),
         margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: isSelected ? color : color.withOpacity(0.4), // باهت إذا لم يتم اختياره
-          border: isSelected ? Border.all(color: Colors.black, width: 4) : null,
+          color: isSelected
+              ? color
+              : color.withOpacity(0.4), // باهت إذا لم يتم اختياره
           borderRadius: BorderRadius.circular(15),
         ),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(label, style: const TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold)),
-              if (isSelected) const Icon(Icons.check_circle, color: Colors.white),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 24,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (isSelected)
+                const Icon(Icons.check_circle, color: Colors.white),
             ],
           ),
         ),

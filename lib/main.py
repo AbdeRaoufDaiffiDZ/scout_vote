@@ -10,11 +10,13 @@ DATA_FILE = "votes_data.json"
 
 def load_data():
     if os.path.exists(DATA_FILE):
+        print(f"Full path to data file: {os.path.abspath(DATA_FILE)}")
         try:
             with open(DATA_FILE, "r") as f:
                 return json.load(f)
         except:
             pass
+    print(f"Full path to data file: {os.path.abspath(DATA_FILE)}")
     return {"ashbal": 0, "kashaf": 0, "mutaqadim": 0, "jawala": 0}
 
 def save_data(data):
